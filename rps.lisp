@@ -1,41 +1,59 @@
 (defpackage #:rps
   (:use :cl))
+
 (in-package #:rps)
 
-(defvar options '("rock" "paper" "scissors"))
+(defun get-user ()
+  "Gets user's choice."
 
-(defparameter pc_option "")
+  (format t "Enter your choice (r, p, s): ")
 
-(defvar user_option)
+  (let ((user-choice (read-line)))
 
-(defun game_loop () "Runs the game"
-  ;; Setting pc_option to a random element from options
-  (setf pc_option (nth (random (length options)) options))
-  (format t "pc: ~a ~&" pc_option)
+    (cond
 
-  (print "Play: ")
-
-  (setf user_option (make-array '(0) :element-type 'base-char :adjustable t))
-  (setf user_option (read-line))
-
-  (cond
-
-    ((string= user_option "q") (print "Bye bye."))
-
-    ((string= user_option pc_option) (print "TIE!"))
-
-    ((and (string= user_option "rock") (string= pc_option "paper")) (print "PC: Paper covers rock!"))
-    ((and (string= user_option "paper") (string= pc_option "rock")) (print "User: Paper covers rock!"))
-
-    ((and (string= user_option "rock") (string= pc_option "scissors")) (print "User: Rock crushes scissors!"))
-    ((and (string= user_option "scissors") (string= pc_option "rock")) (print "PC: Rock crushes scissors!"))
-
-    ((and (string= user_option "scissors") (string= pc_option "paper")) (print "User: Scissors cut paper!"))
-    ((and (string= user_option "paper") (string= pc_option "scissors")) (print "PC: Scissors cut paper!"))
-
+     ((string= user-choice "r") (return-from get-user "rock"))
+     ((string= user-choice "p") (return-from get-user "paper"))
+     ((string= user-choice "s") (return-from get-user "scissors"))
+      )
 
     )
 
 )
 
-(game_loop)
+(defun get-pc ()
+  "Generates pc's choice from a list"
+
+  (let ((choices-list '("rock" "paper" "scissors")))
+    (let ((random-choice (nth (random (length choices-list)) choices-list) ))
+        (return-from get-pc random-choice)
+      )
+    )
+)
+
+(defun game-logic (user-choice pc-choice)
+  "Main logic of the RPS game."
+
+  (cond
+
+    ((and (string= user-choice "rock") (string= pc-choice "scissors")) (format t "User wins!"))
+    ((and (string= user-choice "scissors") (string= pc-choice "paper")) (format t "User wins!"))
+    ((and (string= user-choice "paper") (string= pc-choice "rock")) (format t "User wins!"))
+
+    ((and (string= pc-choice "paper") (string= user-choice "rock")) (format t "PC wins!"))
+    ((and (string= pc-choice "rock") (string= user-choice "scissors")) (format t "PC wins!"))
+    ((and (string= pc-choice "scissors") (string= user-choice "paper")) (format t "PC wins!"))
+
+    ((string= user-choice pc-choice) (format t "tie!~&"))
+
+    )
+)
+
+(defun main () "Main fun."
+
+  (let ((user-choice (get-user)) (pc-choice (get-pc)))
+    ;;(format t "pc = ~a~&" pc-choice)
+    (game-logic user-choice pc-choice)
+    )
+
+)
